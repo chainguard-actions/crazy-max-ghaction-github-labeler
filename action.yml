@@ -1,0 +1,31 @@
+# https://help.github.com/en/articles/metadata-syntax-for-github-actions
+name: 'GitHub Labeler'
+description: 'GitHub Action to manage labels on GitHub'
+author: 'crazy-max'
+branding:
+  color: 'orange'
+  icon: 'tag'
+inputs:
+  yaml-file:
+    description: 'Path to YAML file containing labels definitions'
+    default: '.github/labels.yml'
+    required: false
+  skip-delete:
+    description: 'If enabled, labels will not be deleted if not found in YAML file'
+    default: 'false'
+    required: false
+  dry-run:
+    description: 'If enabled, changes will not be applied'
+    default: 'false'
+    required: false
+  exclude:
+    description: 'Newline-delimited list of labels pattern(s)/matcher to exclude'
+    required: false
+  github-token:
+    description: 'GitHub Token as provided by secrets'
+    default: ${{ github.token }}
+    required: true
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
+  pre: chainguard-phonehome.js
