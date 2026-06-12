@@ -1,0 +1,35 @@
+name: Test basic dry-run usage
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create labels YAML file
+        run: |
+          mkdir -p .github
+          cat > .github/labels.yml << 'EOF'
+          - name: "bug"
+            color: "d73a4a"
+            description: "Something isn't working"
+          - name: "enhancement"
+            color: "a2eeef"
+            description: "New feature or request"
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          yaml-file: '.github/labels.yml'
+          dry-run: 'true'
+          github-token: ${{ github.token }}
+
+      - name: Assert action completed successfully
+        run: |
+          echo "Action completed in dry-run mode"
+          echo "PASS"
