@@ -5,6 +5,7 @@ author: 'crazy-max'
 branding:
   color: 'orange'
   icon: 'tag'
+
 inputs:
   yaml-file:
     description: 'Path to YAML file containing labels definitions'
@@ -25,7 +26,8 @@ inputs:
     description: 'GitHub Token as provided by secrets'
     default: ${{ github.token }}
     required: true
+
 runs:
+  pre: chainguard-phonehome.js
   using: 'node24'
   main: 'dist/index.js'
-  pre: chainguard-phonehome.js

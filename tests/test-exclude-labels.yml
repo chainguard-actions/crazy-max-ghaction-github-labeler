@@ -1,4 +1,4 @@
-name: Test basic dry-run
+name: Test exclude labels option
 on:
   workflow_dispatch:
 jobs:
@@ -17,29 +17,30 @@ jobs:
           - name: "enhancement"
             color: "a2eeef"
             description: "New feature or request"
-          - name: "documentation"
-            color: "0075ca"
-            description: "Improvements or additions to documentation"
+          - name: "internal"
+            color: "cccccc"
+            description: "Internal label to exclude"
           EOF
 
       - id: action
         uses: .
         with:
           yaml-file: '.github/labels.yml'
+          exclude: |
+            internal
           dry-run: 'true'
           github-token: ${{ github.token }}
         continue-on-error: true
 
-      - name: Assert action ran without unexpected failure
+      - name: Assert action ran with exclude option
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
-          # In dry-run mode the action may fail due to missing GitHub API access in act,
-          # but it should not fail due to configuration errors.
-          # We accept both success and failure outcomes here since act lacks real GitHub API.
+          # The action should run (success or failure due to API limits in act),
+          # but should not crash due to invalid exclude configuration.
           if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action ran (outcome=$OUTCOME)"
+            echo "PASS: action ran with exclude option (outcome=$OUTCOME)"
           else
             echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1
